@@ -27,7 +27,7 @@
 
                 for (var i = 0; i < content.length; i++) {
                     text = content[i].Text
-                    if (text.includes(searchTerm)) { //using includes() as temporary search algorithm for now.
+                    if (search(searchTerm, text)) {
                         searchResult = {
                             "ISBN": ISBN,
                             "Page": content[i].Page,
@@ -42,6 +42,19 @@
     }
     
     return result;
+}
+
+// Search Algorithm: Create an array with words from text
+// Use equality operators to find match
+function search(searchTerm, text) {
+    let textArray = text.split(" ");
+    for (word in textArray) {
+        if (textArray[word] === searchTerm) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /* ===== INPUT OBJECTS ===== */
