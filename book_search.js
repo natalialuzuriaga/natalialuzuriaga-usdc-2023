@@ -1,17 +1,3 @@
-/** 
- * RECOMMENDATION
- * 
- * To test your code, you should open "tester.html" in a web browser.
- * You can then use the "Developer Tools" to see the JavaScript console.
- * There, you will see the results unit test execution. You are welcome
- * to run the code any way you like, but this is similar to how we will
- * run your code submission.
- * 
- * The Developer Tools in Chrome are available under the "..." menu, 
- * futher hidden under the option "More Tools." In Firefox, they are 
- * under the hamburger (three horizontal lines), also hidden under "More Tools." 
- */
-
 /**
  * Searches for matches in scanned text.
  * @param {string} searchTerm - The word or term we're searching for. 
@@ -19,11 +5,17 @@
  * @returns {JSON} - Search results.
  * */ 
  function findSearchTermInBooks(searchTerm, scannedTextObj) {
+
     // Create the output object to be returned.
     var result = {
         "SearchTerm": searchTerm,
         "Results": []
     };
+
+    // Checks if searchTerm is empty string.
+    if (!searchTerm) {
+        return result;
+    }
 
     // Checks if input object contains books.
     if (scannedTextObj.length) {
@@ -52,7 +44,17 @@
     return result;
 }
 
-/** Example input object. */
+/* ===== INPUT OBJECTS ===== */
+const noBooksIn = []
+
+const bookWithNoContentIn = [
+    {
+        "Title": "Percy Jackson: The Lightning Thief",
+        "ISBN": "9780000528531",
+        "Content": [] 
+    }
+]
+
 const twentyLeaguesIn = [
     {
         "Title": "Twenty Thousand Leagues Under the Sea",
@@ -76,8 +78,62 @@ const twentyLeaguesIn = [
         ] 
     }
 ]
+
+const harryPotterIn = [
+    {
+        "Title": "Harry Potter & the Half-Blood Prince",
+        "ISBN": "9780545582995",
+        "Content": [
+            {
+                "Page": 4,
+                "Line": 44,
+                "Text": "The green tea and avocado smoothie turned out exactly as would be expected! Can you believe that?"
+            },
+            {
+                "Page": 5,
+                "Line": 55,
+                "Text": "He had a vague sense that trees gave birth to dinosaurs."
+            },
+            {
+                "Page": 6,
+                "Line": 66,
+                "Text": "The detective said he wanted more detailed information. Isn't that suspicious?"
+            } 
+        ] 
+    }
+]
+
+const greatGatsbyIn = [
+    {
+        "Title": "The Great Gatsby",
+        "ISBN": "9780333791035",
+        "Content": [
+            {
+                "Page": 1,
+                "Line": 101,
+                "Text": "Charles ate the french fries and milkshake knowing they would be his last meal."
+            },
+            {
+                "Page": 2,
+                "Line": 102,
+                "Text": "My gramdma used to say: Stop waiting for exceptional things to just happen."
+            },
+            {
+                "Page": 3,
+                "Line": 103,
+                "Text": "They throw cabbage that turns your brain into emotional baggage."
+            } 
+        ] 
+    }
+]
+
+//TODO: check if appending to the same array
+const multipleBooksIn = twentyLeaguesIn.concat(harryPotterIn,greatGatsbyIn);
+
+//TODO: check if appending to the same array
+const multipleBooksWithOneNoContentIn = twentyLeaguesIn.concat(harryPotterIn, bookWithNoContentIn, greatGatsbyIn);
     
-/** Example output object */
+/* ===== EXAMPLE OUTPUT OBJECTS ===== */
 const twentyLeaguesOut = {
     "SearchTerm": "the",
     "Results": [
@@ -85,6 +141,46 @@ const twentyLeaguesOut = {
             "ISBN": "9780000528531",
             "Page": 31,
             "Line": 9
+        }
+    ]
+}
+
+const noMatchesOut = {
+    "SearchTerm": "",
+    "Results": []
+}
+
+const noMatchesWithTheOut = {
+    "SearchTerm": "the",
+    "Results": []
+}
+const noMatchesWithSuperSearchTermOut = {
+    "SearchTerm": "supercalifragilisticexpialidocious",
+    "Results": []
+}
+
+const multipleBooksOut = {
+    "SearchTerm": "and",
+    "Results": [
+        {
+            "ISBN": "9780000528531",
+            "Page": 31,
+            "Line": 9
+        },
+        {
+            "ISBN": "9780000528531",
+            "Page": 31,
+            "Line": 10
+        },
+        {
+            "ISBN": "9780545582995",
+            "Page": 4,
+            "Line": 44
+        },
+        {
+            "ISBN": "9780333791035",
+            "Page": 1,
+            "Line": 101,
         }
     ]
 }
@@ -105,7 +201,9 @@ const twentyLeaguesOut = {
  * Please add your unit tests below.
  * */
 
-/** We can check that, given a known input, we get a known output. */
+/* ===== POSITIVE TESTS ====== */
+
+//General Case: Given a known input in one book, we get a known output.
 const test1result = findSearchTermInBooks("the", twentyLeaguesIn);
 if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test1result)) {
     console.log("PASS: Test 1");
@@ -115,7 +213,7 @@ if (JSON.stringify(twentyLeaguesOut) === JSON.stringify(test1result)) {
     console.log("Received:", test1result);
 }
 
-/** We could choose to check that we get the right number of results. */
+//General Case Length Test: Given a known input in one book, we get a known output.
 const test2result = findSearchTermInBooks("the", twentyLeaguesIn); 
 if (test2result.Results.length == 1) {
     console.log("PASS: Test 2");
@@ -123,4 +221,76 @@ if (test2result.Results.length == 1) {
     console.log("FAIL: Test 2");
     console.log("Expected:", twentyLeaguesOut.Results.length);
     console.log("Received:", test2result.Results.length);
+}
+
+//Input Object contains multiple books with 4 matches returned
+const test9result = findSearchTermInBooks("and", multipleBooksIn); 
+if (JSON.stringify(multipleBooksOut) === JSON.stringify(test9result) && (test9result.Results.length == multipleBooksOut.Results.length) ) {
+    console.log("PASS: Test 9");
+} else {
+    console.log("FAIL: Test 9");
+    console.log("Expected:", multipleBooksOut, "with length ", multipleBooksOut.Results.length);
+    console.log("Received:", test9result, "with length ", test9result.Results.length);
+}
+
+//Edge Case: Input Object contains multiple books with 1 book containing no content
+const test7result = findSearchTermInBooks("and", multipleBooksWithOneNoContentIn); 
+if (JSON.stringify(multipleBooksOut) === JSON.stringify(test7result) && (test7result.Results.length == multipleBooksOut.Results.length)) {
+    console.log("PASS: Test 7");
+} else {
+    console.log("FAIL: Test 7");
+    console.log("Expected:", multipleBooksOut, "with length ", multipleBooksOut.Results.length);
+    console.log("Received:", test7result, "with length ", test9result.Results.length);
+}
+
+/* ===== NEGATIVE TESTS ====== */
+
+//Edge Case: Search Term is an empty string
+const test3result = findSearchTermInBooks("", twentyLeaguesIn); 
+if (JSON.stringify(noMatchesOut) === JSON.stringify(test3result)) {
+    console.log("PASS: Test 3");
+} else {
+    console.log("FAIL: Test 3");
+    console.log("Expected:", noMatchesOut);
+    console.log("Received:", test3result);
+}
+
+//No Match: Search Term is not present in books
+const test4result = findSearchTermInBooks("supercalifragilisticexpialidocious", twentyLeaguesIn);
+if (JSON.stringify(noMatchesWithSuperSearchTermOut) === JSON.stringify(test4result)) {
+    console.log("PASS: Test 4");
+} else {
+    console.log("FAIL: Test 4");
+    console.log("Expected:", noMatchesWithSuperSearchTermOut);
+    console.log("Received:", test4result);
+}
+
+//Edge Case: Input Object contains no books
+const test5result = findSearchTermInBooks("the", noBooksIn); 
+if (JSON.stringify(noMatchesWithTheOut) === JSON.stringify(test5result)) {
+    console.log("PASS: Test 5");
+} else {
+    console.log("FAIL: Test 5");
+    console.log("Expected:", noMatchesWithTheOut);
+    console.log("Received:", test5result);
+}
+
+//Edge Case: Input Object contains a singular book with no content
+const test6result = findSearchTermInBooks("the", bookWithNoContentIn); 
+if (JSON.stringify(noMatchesWithTheOut) === JSON.stringify(test6result)) {
+    console.log("PASS: Test 6");
+} else {
+    console.log("FAIL: Test 6");
+    console.log("Expected:", noMatchesWithTheOut);
+    console.log("Received:", test6result);
+}
+
+/* ===== CASE-SENSITIVE TESTS ====== */
+const test8result = findSearchTermInBooks("He", harryPotterIn); 
+if (JSON.stringify(noMatchesWithTheOut) === JSON.stringify(test8result)) {
+    console.log("PASS: Test 8");
+} else {
+    console.log("FAIL: Test 8");
+    console.log("Expected:", noMatchesWithTheOut);
+    console.log("Received:", test8result);
 }
