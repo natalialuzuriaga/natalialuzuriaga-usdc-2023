@@ -20,14 +20,15 @@
     // Checks if input object contains books.
     if (scannedTextObj.length) {
         var resultsArray = [];
-
+        // Iterate through each book
         scannedTextObj.forEach(function(book) {
             let ISBN = book.ISBN;
             let content = book.Content
-
+                // Iterate through each text in content
                 for (var i = 0; i < content.length; i++) {
                     text = content[i].Text
                     if (search(searchTerm, text)) {
+                        // If match found, create and push searchResult
                         searchResult = {
                             "ISBN": ISBN,
                             "Page": content[i].Page,
@@ -140,15 +141,24 @@ const greatGatsbyIn = [
     }
 ]
 
-//TODO: check if appending to the same array
 const multipleBooksIn = twentyLeaguesIn.concat(harryPotterIn,greatGatsbyIn);
 
-//TODO: check if appending to the same array
 const multipleBooksWithOneNoContentIn = twentyLeaguesIn.concat(harryPotterIn, bookWithNoContentIn, greatGatsbyIn);
     
 /* ===== EXAMPLE OUTPUT OBJECTS ===== */
 const twentyLeaguesOut = {
     "SearchTerm": "the",
+    "Results": [
+        {
+            "ISBN": "9780000528531",
+            "Page": 31,
+            "Line": 9
+        }
+    ]
+}
+
+const apostropheOut = {
+    "SearchTerm": "Canadian's",
     "Results": [
         {
             "ISBN": "9780000528531",
@@ -167,6 +177,29 @@ const noMatchesWithTheOut = {
     "SearchTerm": "the",
     "Results": []
 }
+
+const noMatchesWithCanOut = {
+    "SearchTerm": "can",
+    "Results": []
+}
+
+const matchWithCanOut = {
+    "SearchTerm": "Can",
+    "Results": [
+        {
+            "ISBN": "9780545582995",
+            "Page": 4,
+            "Line": 44
+        }
+    ]
+}
+
+
+const noMatchesWithCanadianOut = {
+    "SearchTerm": "Canadian",
+    "Results": []
+}
+
 const noMatchesWithSuperSearchTermOut = {
     "SearchTerm": "supercalifragilisticexpialidocious",
     "Results": []
@@ -236,74 +269,106 @@ if (test2result.Results.length == 1) {
     console.log("Received:", test2result.Results.length);
 }
 
-//Input Object contains multiple books with 4 matches returned
-const test9result = findSearchTermInBooks("and", multipleBooksIn); 
-if (JSON.stringify(multipleBooksOut) === JSON.stringify(test9result) && (test9result.Results.length == multipleBooksOut.Results.length) ) {
-    console.log("PASS: Test 9");
+//Apostrophe Case: Search Term contains an apostrophe
+const test3result = findSearchTermInBooks("Canadian\'s", twentyLeaguesIn); 
+if (JSON.stringify(apostropheOut) === JSON.stringify(test3result)) {
+    console.log("PASS: Test 3");
 } else {
-    console.log("FAIL: Test 9");
+    console.log("FAIL: Test 3");
+    console.log("Expected:", apostropheOut);
+    console.log("Received:", test3result);
+}
+
+//Input Object contains multiple books with 4 matches returned
+const test4result = findSearchTermInBooks("and", multipleBooksIn); 
+if (JSON.stringify(multipleBooksOut) === JSON.stringify(test4result) && (test4result.Results.length == multipleBooksOut.Results.length) ) {
+    console.log("PASS: Test 4");
+} else {
+    console.log("FAIL: Test 4");
     console.log("Expected:", multipleBooksOut, "with length ", multipleBooksOut.Results.length);
-    console.log("Received:", test9result, "with length ", test9result.Results.length);
+    console.log("Received:", test4result, "with length ", test4result.Results.length);
 }
 
 //Edge Case: Input Object contains multiple books with 1 book containing no content
-const test7result = findSearchTermInBooks("and", multipleBooksWithOneNoContentIn); 
-if (JSON.stringify(multipleBooksOut) === JSON.stringify(test7result) && (test7result.Results.length == multipleBooksOut.Results.length)) {
-    console.log("PASS: Test 7");
+const test5result = findSearchTermInBooks("and", multipleBooksWithOneNoContentIn); 
+if (JSON.stringify(multipleBooksOut) === JSON.stringify(test5result) && (test5result.Results.length == multipleBooksOut.Results.length)) {
+    console.log("PASS: Test 5");
 } else {
-    console.log("FAIL: Test 7");
+    console.log("FAIL: Test 5");
     console.log("Expected:", multipleBooksOut, "with length ", multipleBooksOut.Results.length);
-    console.log("Received:", test7result, "with length ", test9result.Results.length);
+    console.log("Received:", test5result, "with length ", test5result.Results.length);
 }
 
 /* ===== NEGATIVE TESTS ====== */
 
 //Edge Case: Search Term is an empty string
-const test3result = findSearchTermInBooks("", twentyLeaguesIn); 
-if (JSON.stringify(noMatchesOut) === JSON.stringify(test3result)) {
-    console.log("PASS: Test 3");
-} else {
-    console.log("FAIL: Test 3");
-    console.log("Expected:", noMatchesOut);
-    console.log("Received:", test3result);
-}
-
-//No Match: Search Term is not present in books
-const test4result = findSearchTermInBooks("supercalifragilisticexpialidocious", twentyLeaguesIn);
-if (JSON.stringify(noMatchesWithSuperSearchTermOut) === JSON.stringify(test4result)) {
-    console.log("PASS: Test 4");
-} else {
-    console.log("FAIL: Test 4");
-    console.log("Expected:", noMatchesWithSuperSearchTermOut);
-    console.log("Received:", test4result);
-}
-
-//Edge Case: Input Object contains no books
-const test5result = findSearchTermInBooks("the", noBooksIn); 
-if (JSON.stringify(noMatchesWithTheOut) === JSON.stringify(test5result)) {
-    console.log("PASS: Test 5");
-} else {
-    console.log("FAIL: Test 5");
-    console.log("Expected:", noMatchesWithTheOut);
-    console.log("Received:", test5result);
-}
-
-//Edge Case: Input Object contains a singular book with no content
-const test6result = findSearchTermInBooks("the", bookWithNoContentIn); 
-if (JSON.stringify(noMatchesWithTheOut) === JSON.stringify(test6result)) {
+const test6result = findSearchTermInBooks("", twentyLeaguesIn); 
+if (JSON.stringify(noMatchesOut) === JSON.stringify(test6result)) {
     console.log("PASS: Test 6");
 } else {
     console.log("FAIL: Test 6");
-    console.log("Expected:", noMatchesWithTheOut);
+    console.log("Expected:", noMatchesOut);
     console.log("Received:", test6result);
 }
 
-/* ===== CASE-SENSITIVE TESTS ====== */
-const test8result = findSearchTermInBooks("He", harryPotterIn); 
+//No Match: Search Term is not present in books
+const test7result = findSearchTermInBooks("supercalifragilisticexpialidocious", twentyLeaguesIn);
+if (JSON.stringify(noMatchesWithSuperSearchTermOut) === JSON.stringify(test7result)) {
+    console.log("PASS: Test 7");
+} else {
+    console.log("FAIL: Test 7");
+    console.log("Expected:", noMatchesWithSuperSearchTermOut);
+    console.log("Received:", test7result);
+}
+
+//Edge Case: Input Object contains no books
+const test8result = findSearchTermInBooks("the", noBooksIn); 
 if (JSON.stringify(noMatchesWithTheOut) === JSON.stringify(test8result)) {
     console.log("PASS: Test 8");
 } else {
     console.log("FAIL: Test 8");
     console.log("Expected:", noMatchesWithTheOut);
     console.log("Received:", test8result);
+}
+
+//Edge Case: Input Object contains a singular book with no content
+const test9result = findSearchTermInBooks("the", bookWithNoContentIn); 
+if (JSON.stringify(noMatchesWithTheOut) === JSON.stringify(test9result)) {
+    console.log("PASS: Test 9");
+} else {
+    console.log("FAIL: Test 9");
+    console.log("Expected:", noMatchesWithTheOut);
+    console.log("Received:", test9result);
+}
+
+//Substring Case: Search Term is a substring of word in text
+const test10result = findSearchTermInBooks("Canadian", twentyLeaguesIn); 
+if (JSON.stringify(noMatchesWithCanadianOut) === JSON.stringify(test10result)) {
+    console.log("PASS: Test 10");
+} else {
+    console.log("FAIL: Test 10");
+    console.log("Expected:", noMatchesWithCanadianOut);
+    console.log("Received:", test10result);
+}
+
+/* ===== CASE-SENSITIVE TESTS ====== */
+
+// Match: Uppercase search term with uppercase word match
+const test11result = findSearchTermInBooks("Can", harryPotterIn); 
+if (JSON.stringify(matchWithCanOut) === JSON.stringify(test11result)) {
+    console.log("PASS: Test 11");
+} else {
+    console.log("FAIL: Test 11");
+    console.log("Expected:", matchWithCanOut);
+    console.log("Received:", test11result);
+}
+
+//No Match: Lowercase search term with uppercase word match
+const test12result = findSearchTermInBooks("can", harryPotterIn); 
+if (JSON.stringify(noMatchesWithCanOut) === JSON.stringify(test12result)) {
+    console.log("PASS: Test 12");
+} else {
+    console.log("FAIL: Test 12");
+    console.log("Expected:", noMatchesWithCanOut);
+    console.log("Received:", test12result);
 }
